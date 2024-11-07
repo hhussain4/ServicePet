@@ -1,0 +1,96 @@
+/* dashboard.css */
+
+/* Top Bar Styles */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #007bff;
+    padding: 10px;
+    color: white;
+  }
+  
+  .logo {
+    font-size: 24px;
+  }
+  
+  .user-menu {
+    display: flex;
+    align-items: center;
+  }
+  
+  .user-icon {
+    margin-right: 10px;
+  }
+  
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .dropbtn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    color: black;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    right: 0; /* Align the dropdown content to the right edge of the button */
+    left: auto; /* Override any left positioning */
+  }
+  
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  .dropdown-content a:hover {
+    background-color: #ddd;
+  }
+  
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+  
+  .dropdown:hover .dropbtn {
+    background-color: #0056b3;
+  }
+  
+  /* Nav Bar Styles */
+  .nav-bar {
+    display: flex;
+    background-color: #f0f0f0;
+    padding: 10px;
+  }
+  
+  .nav-link {
+    margin-right: 15px;
+    text-decoration: none;
+    color: #007bff;
+    font-size: 18px;
+  }
+  
+  .nav-link:hover {
+    text-decoration: underline;
+  }
+  
+  /* Content Styles */
+  .content {
+    padding: 20px;
+  }
+  
+  .content p {
+    font-size: 24px;
+  }
+  
