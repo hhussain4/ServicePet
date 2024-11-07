@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Appointment</title>
+  <link rel="stylesheet" href="dashboard.css">
+  <style>
+    .button-row {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+    }
+    .step {
+      display: none;
+    }
+    .step.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <div class="logo">ServicePet</div>
+    <div class="user-menu">
+      <div class="user-icon">👤</div>
+      <div class="dropdown">
+        <button class="dropbtn">☰</button>
+        <div class="dropdown-content">
+          <a href="settings.html">User Settings</a>
+          <a href="/logout">Sign Out</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="nav-bar">
+    <a href="dashboard.html" class="nav-link">Dashboard</a>
+    <a href="appointments.html" class="nav-link">Create Appointment</a>
+  </div>
+  <div class="content">
+    <h2>Create Appointment</h2>
+    <div class="button-row">
+      <button onclick="showStep(1)">Select Location</button>
+      <button onclick="showStep(2)" disabled id="select-vet-btn">Select Vet</button>
+      <button onclick="showStep(3)" disabled id="select-time-btn">Select Time</button>
+    </div>
+    <form id="appointment-form">
+      <!-- Step 1: Select Location -->
+      <div class="step active" id="step-1">
+        <h3>Select Location</h3>
+        <label><input type="radio" name="city" value="New York City" onchange="enableNext(1)"> New York City</label><br>
+        <label><input type="radio" name="city" value="Buffalo" onchange="enableNext(1)"> Buffalo</label><br>
+        <label><input type="radio" name="city" value="Rochester" onchange="enableNext(1)"> Rochester</label><br>
+        <label><input type="radio" name="city" value="Yonkers" onchange="enableNext(1)"> Yonkers</label><br>
+        <button type="button" onclick="showStep(2)" disabled id="next-step-1">Next</button>
+      </div>
+      
+      <!-- Step 2: Select Vet -->
+      <div class="step" id="step-2">
+        <h3>Select Vet</h3>
+        <!-- Vet options will be populated dynamically based on selected city -->
+        <div id="vet-options"></div>
+        <button type="button" onclick="showStep(3)" disabled id="next-step-2">Next</button>
+      </div>
+      
+      <!-- Step 3: Select Time -->
+      <div class="step" id="step-3">
+        <h3>Select Time</h3>
+        <p>Select Time functionality is not implemented yet.</p>
+        <button type="submit">Save Appointment</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    function showStep(step) {
+      document.querySelectorAll('.step').forEach(function(element) {
+        element.classList.remove('active');
+      });
+      document.getElementById('step-' + step).classList.add('active');
+    }
+
+    function enableNext(step) {
+      document.getElementById('next-step-' + step).disabled = false;
+      if (step === 1) {
+        document.getElementById('select-vet-btn').disabled = false;
+        // Load vet options based on selected city
+        const selectedCity = document.querySelector('input[name="city"]:checked').value;
+        loadVetOptions(selectedCity);
+      }
+      if (step === 2) {
+        document.getElementById('select-time-btn').disabled = false;
+      }
+    }
+
+    function loadVetOptions(city) {
+      const vetOptions = {
+        'New York City': ['Dr. Smith', 'Dr. Johnson'],
+        'Buffalo': ['Dr. Brown', 'Dr. Davis'],
+        'Rochester': ['Dr. Wilson', 'Dr. Garcia'],
+        'Yonkers': ['Dr. Martinez', 'Dr. Anderson']
+      };
+      const container = document.getElementById('vet-options');
+      container.innerHTML = '';
+      vetOptions[city].forEach(function(vet) {
+        const label = document.createElement('label');
+        label.innerHTML = `<input type="radio" name="vet" value="${vet}" onchange="enableNext(2)"> ${vet}<br>`;
+        container.appendChild(label);
+      });
+    }
+  </script>
+</body>
+</html>
