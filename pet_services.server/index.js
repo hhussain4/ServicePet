@@ -1,7 +1,6 @@
 const express = require('express');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
-const bcrypt = require('bcrypt');
 const cors = require('cors');
 const app = express();
 const port = 3000;
@@ -37,22 +36,27 @@ connection.connect(err => {
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
 
-  connection.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
+  console.log('Login attempt:', email);
+
+  connection.query('SELECT * FROM users WHERE email = ?', [email], (err, results) => {
     if (err) {
+      console.error('Database error:', err);
       return res.status(500).send('Server error');
     }
 
     if (results.length === 0) {
+      console.log('No user found with email:', email);
       return res.status(401).send('Invalid email or password');
     }
 
     const user = results[0];
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
+    if (password !== user.password) {
+      console.log('Password mismatch for user:', email);
       return res.status(401).send('Invalid email or password');
     }
 
+    console.log('Login successful for user:', email);
     res.send({ message: 'Login successful', userId: user.userID });
   });
 });

@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './login.css'; // Make sure to import the CSS file
 
-const Login = () => {
+const Login = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,7 +26,8 @@ const Login = () => {
 
       const data = await response.json();
       console.log('Login successful:', data);
-      // Handle successful login (e.g., save token, redirect to dashboard)
+      onLogin(); // Call the onLogin prop to update the authentication status
+      navigate('/'); // Redirect to the dashboard
     } catch (error) {
       console.error('Error:', error);
       setError('Login failed. Please check your credentials and try again.');
@@ -32,27 +36,29 @@ const Login = () => {
 
   return (
     <div className="login-container">
-      <h1>Login</h1>
-      {error && <p className="error">{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="email">Email</label>
-        <input
-          type="email"
-          id="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <label htmlFor="password">Password</label>
-        <input
-          type="password"
-          id="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit">Login</button>
-      </form>
+      <div className="login-box">
+        <h1>Login</h1>
+        {error && <p className="error">{error}</p>}
+        <form onSubmit={handleSubmit}>
+          <label htmlFor="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <label htmlFor="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button type="submit">Login</button>
+        </form>
+      </div>
     </div>
   );
 };
