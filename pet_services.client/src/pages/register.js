@@ -14,6 +14,12 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Basic client-side validation
+    if (!name || !email || !password || !ssn || !address) {
+      setError('All fields are required.');
+      return;
+    }
+
     try {
       const response = await fetch('http://localhost:3000/register', {
         method: 'POST',
@@ -23,16 +29,17 @@ const Register = () => {
         body: JSON.stringify({ name, email, password, ssn, address }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('Registration failed');
+        throw new Error(data.message || 'Registration failed');
       }
 
-      const data = await response.json();
       console.log('Registration successful:', data);
-      navigate('/login'); // Redirect to the login page after successful registration
+      navigate('/dashboard'); // Redirect to the dashboard after successful registration
     } catch (error) {
       console.error('Error:', error);
-      setError('Registration failed. Please try again.');
+      setError(error.message || 'Registration failed. Please try again.');
     }
   };
 
@@ -87,7 +94,7 @@ const Register = () => {
             onChange={(e) => setAddress(e.target.value)}
             required
           />
-          <button type="submit" className="w-full p-2 bg-[#AF4934] text-black border-none rounded cursor-pointer hover:bg-[#E4A79A] transition">Register</button>
+          <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">Register</button>
         </form>
       </div>
     </div>
