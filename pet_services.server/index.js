@@ -32,32 +32,17 @@ connection.connect(err => {
   console.log('Connected to the database as id ' + connection.threadId);
 });
 
-// Login route
-app.post('/login', (req, res) => {
-  const { email, password } = req.body;
-
-  console.log('Login attempt:', email);
-
-  connection.query('SELECT * FROM users WHERE email = ?', [email], (err, results) => {
+// Registration endpoint
+app.post('/register', (req, res) => {
+  const { name, email, password, ssn, address } = req.body;
+  const query = 'INSERT INTO users (name, email, password, ssn, address) VALUES (?, ?, ?, ?, ?)';
+  connection.query(query, [name, email, password, ssn, address], (err, results) => {
     if (err) {
-      console.error('Database error:', err);
-      return res.status(500).send('Server error');
+      console.error('Error inserting user:', err);
+      res.status(500).send('Registration failed');
+    } else {
+      res.status(200).send('Registration successful');
     }
-
-    if (results.length === 0) {
-      console.log('No user found with email:', email);
-      return res.status(401).send('Invalid email or password');
-    }
-
-    const user = results[0];
-
-    if (password !== user.password) {
-      console.log('Password mismatch for user:', email);
-      return res.status(401).send('Invalid email or password');
-    }
-
-    console.log('Login successful for user:', email);
-    res.send({ message: 'Login successful', userId: user.userID });
   });
 });
 
