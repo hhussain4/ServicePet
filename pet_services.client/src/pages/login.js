@@ -18,6 +18,7 @@ const Login = ({ onLogin }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
+        credentials: 'include', // Required for cookies
       });
 
       if (!response.ok) {

@@ -20,23 +20,27 @@ const sessionStore = new MySQLStore({
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(cors({
-  origin: 'http://localhost:3001', // Replace with your frontend URL
+  origin: 'http://localhost:3001', // Your frontend's URL
+  credentials: true, // Allow cookies to be sent
   methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type'],
-  credentials: true // Allow credentials (cookies) to be included
+  allowedHeaders: ['Content-Type', 'Authorization'], // Add Authorization if needed
 }));
+
 
 // Session middleware
 app.use(session({
-  secret: 'your-secret-key', // Keep this secure
+  secret: 'your-secret-key',
   resave: false,
   saveUninitialized: false,
   store: sessionStore,
   cookie: {
-    secure: false,
-    sameSite: 'lax',
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    secure: false, // For HTTPS: set to true
+    sameSite: 'none', // Required for cross-origin requests
+    httpOnly: true, // Ensures cookie is not accessible via JavaScript
   },
 }));
+
 
 // Database connection
 const connection = mysql.createConnection({
@@ -83,22 +87,33 @@ app.post('/register', (req, res) => {
 // Login endpoint
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
+
   const query = 'SELECT * FROM users WHERE email = ? AND password = ?';
   connection.query(query, [email, password], (err, results) => {
     if (err) {
       console.error('Error querying user:', err);
-      res.status(500).json({ message: 'Login failed' });
-      return;
+      return res.status(500).json({ message: 'Login failed' });
     }
+
     if (results.length > 0) {
-      req.session.userId = results[0].userID;
-      req.session.save((saveErr) => {
-        if (saveErr) {
-          console.error('Error saving session:', saveErr);
-          res.status(500).json({ message: 'Login failed' });
-          return;
+      req.session.regenerate((regenerateErr) => {
+        if (regenerateErr) {
+          console.error('Error regenerating session:', regenerateErr);
+          return res.status(500).json({ message: 'Login failed' });
         }
-        res.status(200).json({ message: 'Login successful' });
+
+        req.session.userId = results[0].userID; // Dynamically set userId from the database
+        console.log('Setting userId in session:', req.session.userId); // Debug
+
+        req.session.save((saveErr) => {
+          if (saveErr) {
+            console.error('Error saving session:', saveErr);
+            return res.status(500).json({ message: 'Login failed' });
+          }
+
+          console.log('Session saved:', req.session);
+          res.status(200).json({ message: 'Login successful', sessionId: req.session.id });
+        });
       });
     } else {
       res.status(401).json({ message: 'Invalid email or password' });
@@ -106,10 +121,16 @@ app.post('/login', (req, res) => {
   });
 });
 
+
+
+
+
+
 // User data endpoint
 app.get('/api/user', (req, res) => {
-  console.log('Cookies received:', req.cookies); // Log cookies
-  console.log('Session data:', req.session); // Log session details
+  console.log('Cookies received:', req.cookies); // Logs cookies
+  console.log('Session ID:', req.sessionID); // Logs the session ID
+  console.log('Session data:', req.session); // Logs session details
 
   if (!req.session || !req.session.userId) {
     console.log('No session or userId found. Returning 401.');
