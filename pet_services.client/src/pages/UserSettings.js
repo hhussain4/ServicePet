@@ -30,6 +30,13 @@ const UserSettings = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    // Password validation
+    if (user['new-password'] && user['new-password'] !== user['confirm-password']) {
+      setError('New password and confirm password do not match');
+      return;
+    }
+
     try {
       const response = await fetch('http://localhost:3000/update-user', {
         method: 'POST',
@@ -46,6 +53,7 @@ const UserSettings = () => {
 
       const data = await response.json();
       console.log('User information updated successfully:', data);
+      setError(''); // Clear error on successful update
     } catch (error) {
       console.error('Error:', error);
       setError('Failed to update user data');
@@ -55,6 +63,7 @@ const UserSettings = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser((prevUser) => ({ ...prevUser, [name]: value }));
+    setError(''); // Clear error on input change
   };
 
   return (
