@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './UserSettings.css';
+import PetsPage from './PetsPage';
+
 
 const UserSettings = () => {
   const [user, setUser] = useState({});
@@ -75,6 +77,7 @@ const UserSettings = () => {
   };
 
   return (
+   <div>
     <div className="user-settings-container">
       <h1>User Settings</h1>
       {error && <p className="error">{error}</p>}
@@ -142,6 +145,10 @@ const UserSettings = () => {
         <button type="submit">Save</button>
       </form>
     </div>
+    <div>
+      <PetsPage/>
+    </div>
+    </div> 
   );
 };
 
