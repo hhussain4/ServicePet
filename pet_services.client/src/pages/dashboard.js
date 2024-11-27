@@ -1,34 +1,21 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import './dashboard.css';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import NavBar from "./NavBar"
 
 const Dashboard = () => {
+ {/* const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const closeDropdown = () => {
+    setIsDropdownOpen(false);
+  }; */}
+
   return (
-    
-    
-    
-    
-    
     <div className="App">
-      <div className="top-bar">
-        <div className="logo">ServicePet</div>
-        <div className="user-menu">
-          <div className="user-icon">👤</div>
-          <div className="dropdown">
-            <button className="dropbtn hover:bg-#0056b3">☰</button>
-            <div className="dropdown-content">
-              <Link to="/settings">User Settings</Link>
-              <Link to="/logout">Sign Out</Link>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="nav-bar">
-        <Link to="/appointments" className="nav-link">Create Appointment</Link>
-      </div>
-      <div className="content">
-        <p>Welcome to the ServicePet Dashboard!</p>
-      </div>
+      <NavBar />
     </div>
   );
 };
