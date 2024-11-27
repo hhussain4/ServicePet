@@ -6,7 +6,7 @@ const session = require('express-session');
 const cookieParser = require('cookie-parser'); 
 const MySQLStore = require('express-mysql-session')(session);
 const app = express();
-const port = 3000;
+const port = 5000;
 
 // Database connection
 const sessionStore = new MySQLStore({
@@ -20,7 +20,7 @@ const sessionStore = new MySQLStore({
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(cors({
-  origin: 'http://localhost:3001', // Your frontend's URL
+  origin: 'http://localhost:3000', // Your frontend's URL
   credentials: true, // Allow cookies to be sent
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'], // Add Authorization if needed
