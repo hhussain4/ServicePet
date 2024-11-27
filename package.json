@@ -1,0 +1,12 @@
+{
+  "name": "ServicePet",
+  "version": "1.0.0",
+  "scripts": {
+    "start-server": "node pet_services.server/index.js", 
+    "start-client": "npm start --prefix pet_services.client", 
+    "start": "concurrently \"npm run start-server\" \"npm run start-client\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}
