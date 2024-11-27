@@ -19,6 +19,7 @@ const Dashboard = () => {
             <div className="dropdown-content">
               <Link to="/settings">User Settings</Link>
               <Link to="/logout">Sign Out</Link>
+              <Link to="/pets">Pets</Link>
             </div>
           </div>
         </div>
