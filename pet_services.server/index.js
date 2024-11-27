@@ -169,6 +169,80 @@ app.get('/api/user', (req, res) => {
   });
 });
 
+// Add pet endpoint
+app.post('/api/pets', (req, res) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    console.log('No Authorization header. Returning 401.');
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  const sessionToken = authHeader.split(' ')[1];
+
+  sessionStore.get(sessionToken, (err, session) => {
+    if (err || !session) {
+      console.log('Invalid session token. Returning 401.');
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    if (!session.userId) {
+      console.log('No userId in session. Returning 401.');
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const { breed, name, birthDate } = req.body;
+
+    if (!breed || !name || !birthDate) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    const query = 'INSERT INTO pets (userID, breed, name, birthDate) VALUES (?, ?, ?, ?)';
+    connection.query(query, [session.userId, breed, name, birthDate], (err, result) => {
+      if (err) {
+        console.error('Error adding pet:', err);
+        return res.status(500).json({ message: 'Failed to add pet' });
+      }
+
+      res.status(201).json({ message: 'Pet added successfully', petID: result.insertId });
+    });
+  });
+});
+
+// Get pets endpoint
+app.get('/api/pets', (req, res) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    console.log('No Authorization header. Returning 401.');
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  const sessionToken = authHeader.split(' ')[1];
+
+  sessionStore.get(sessionToken, (err, session) => {
+    if (err || !session) {
+      console.log('Invalid session token. Returning 401.');
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    if (!session.userId) {
+      console.log('No userId in session. Returning 401.');
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const query = 'SELECT * FROM pets WHERE userID = ?';
+    connection.query(query, [session.userId], (err, results) => {
+      if (err) {
+        console.error('Error fetching pets:', err);
+        return res.status(500).json({ message: 'Failed to fetch pets' });
+      }
+
+      res.status(200).json(results);
+    });
+  });
+});
+
 
 
 

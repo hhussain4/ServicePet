@@ -5,6 +5,7 @@ import Appointments from './pages/appointments';
 import Login from './pages/login';
 import Register from './pages/register'; // Import the Register component
 import UserSettings from './pages/UserSettings'; // Assuming you have this component
+import PetsPage from './pages/PetsPage'; // Assuming you have this component
 import { useState } from 'react';
 
 function App() {
@@ -23,6 +24,10 @@ function App() {
           <Route
             path="/appointments"
             element={isAuthenticated ? <Appointments /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/pets"
+            element={isAuthenticated ? <PetsPage /> : <Navigate to="/login" />}
           />
           <Route
             path="/settings"
