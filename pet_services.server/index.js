@@ -102,8 +102,8 @@ app.post('/login', (req, res) => {
           return res.status(500).json({ message: 'Login failed' });
         }
 
-        req.session.userId = results[0].userID; // Dynamically set userId from the database
-        console.log('Setting userId in session:', req.session.userId); // Debug
+        req.session.userId = results[0].userID;
+        console.log('Setting userId in session:', req.session.userId);
 
         req.session.save((saveErr) => {
           if (saveErr) {
@@ -111,8 +111,11 @@ app.post('/login', (req, res) => {
             return res.status(500).json({ message: 'Login failed' });
           }
 
-          console.log('Session saved:', req.session);
-          res.status(200).json({ message: 'Login successful', sessionId: req.session.id });
+          console.log('Session saved successfully:', req.session);
+          res.status(200).json({
+            message: 'Login successful',
+            sessionToken: req.session.id, // Return session ID to the client
+          });
         });
       });
     } else {
@@ -126,33 +129,47 @@ app.post('/login', (req, res) => {
 
 
 
+
 // User data endpoint
 app.get('/api/user', (req, res) => {
-  console.log('Cookies received:', req.cookies); // Logs cookies
-  console.log('Session ID:', req.sessionID); // Logs the session ID
-  console.log('Session data:', req.session); // Logs session details
+  const authHeader = req.headers.authorization;
 
-  if (!req.session || !req.session.userId) {
-    console.log('No session or userId found. Returning 401.');
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    console.log('No Authorization header. Returning 401.');
     return res.status(401).json({ message: 'Unauthorized' });
   }
 
-  const userId = req.session.userId;
-  console.log('Authenticated userId:', userId);
+  const sessionToken = authHeader.split(' ')[1];
 
-  const query = 'SELECT * FROM users WHERE userID = ?';
-  connection.query(query, [userId], (err, results) => {
-    if (err) {
-      console.error('Error fetching user data:', err);
-      return res.status(500).json({ message: 'Failed to fetch user data' });
+  sessionStore.get(sessionToken, (err, session) => {
+    if (err || !session) {
+      console.log('Invalid session token. Returning 401.');
+      return res.status(401).json({ message: 'Unauthorized' });
     }
-    if (results.length > 0) {
-      return res.status(200).json(results[0]);
-    } else {
-      return res.status(404).json({ message: 'User not found' });
+
+    if (!session.userId) {
+      console.log('No userId in session. Returning 401.');
+      return res.status(401).json({ message: 'Unauthorized' });
     }
+
+    const query = 'SELECT * FROM users WHERE userID = ?';
+    connection.query(query, [session.userId], (err, results) => {
+      if (err) {
+        console.error('Error fetching user data:', err);
+        return res.status(500).json({ message: 'Failed to fetch user data' });
+      }
+
+      if (results.length > 0) {
+        console.log('User data fetched from database:', results[0]); // Log this
+        res.status(200).json(results[0]);
+      } else {
+        res.status(404).json({ message: 'User not found' });
+      }
+    });
   });
 });
+
+
 
 
 // Start the server

@@ -10,7 +10,7 @@ const Login = ({ onLogin }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
       const response = await fetch('http://localhost:3000/login', {
         method: 'POST',
@@ -18,15 +18,18 @@ const Login = ({ onLogin }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
-        credentials: 'include', // Required for cookies
       });
-
+  
       if (!response.ok) {
         throw new Error('Login failed');
       }
-
+  
       const data = await response.json();
       console.log('Login successful:', data);
+  
+      // Store the session token in localStorage
+      localStorage.setItem('sessionToken', data.sessionToken);
+  
       onLogin(); // Call the onLogin prop to update the authentication status
       navigate('/'); // Redirect to the dashboard
     } catch (error) {
@@ -34,6 +37,7 @@ const Login = ({ onLogin }) => {
       setError('Login failed. Please check your credentials and try again.');
     }
   };
+  
 
   const handleRegister = () => {
     navigate('/register'); // Navigate to the registration page

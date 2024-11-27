@@ -8,9 +8,17 @@ const UserSettings = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
+        const sessionToken = localStorage.getItem('sessionToken');
+
+        if (!sessionToken) {
+          throw new Error('No session token found. Please log in.');
+        }
+
         const response = await fetch('http://localhost:3000/api/user', {
           method: 'GET',
-          credentials: 'include', // Include cookies for session
+          headers: {
+            'Authorization': `Bearer ${sessionToken}`,
+          },
         });
 
         if (!response.ok) {
@@ -18,6 +26,7 @@ const UserSettings = () => {
         }
 
         const data = await response.json();
+        console.log('Fetched user data:', data); // Debug log
         setUser(data);
       } catch (error) {
         console.error('Error:', error);
@@ -44,7 +53,6 @@ const UserSettings = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(user),
-        credentials: 'include', // Include cookies for session
       });
 
       if (!response.ok) {
@@ -89,15 +97,7 @@ const UserSettings = () => {
           onChange={handleChange}
           required
         />
-        <label htmlFor="phone">Phone</label>
-        <input
-          type="text"
-          id="phone"
-          name="phone"
-          value={user.phone || ''}
-          onChange={handleChange}
-          required
-        />
+       
         <label htmlFor="address">Address</label>
         <input
           type="text"
@@ -107,21 +107,28 @@ const UserSettings = () => {
           onChange={handleChange}
           required
         />
+        <label htmlFor="SSN">SSN</label>
+        <input
+          type="text"
+          id="SSN"
+          name="SSN"
+          value={user.SSN || ''}
+          disabled // SSN is not editable
+        />
         <label htmlFor="current-password">Current Password</label>
         <input
           type="password"
           id="current-password"
           name="current-password"
-          value={user['current-password'] || ''}
+          placeholder="Enter current password"
           onChange={handleChange}
-          required
         />
         <label htmlFor="new-password">New Password</label>
         <input
           type="password"
           id="new-password"
           name="new-password"
-          value={user['new-password'] || ''}
+          placeholder="Enter new password"
           onChange={handleChange}
         />
         <label htmlFor="confirm-password">Confirm New Password</label>
@@ -129,7 +136,7 @@ const UserSettings = () => {
           type="password"
           id="confirm-password"
           name="confirm-password"
-          value={user['confirm-password'] || ''}
+          placeholder="Confirm new password"
           onChange={handleChange}
         />
         <button type="submit">Save</button>
