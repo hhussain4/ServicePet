@@ -1,0 +1,49 @@
+.register-container {
+    padding: 20px;
+  }
+  
+  .register-box {
+    background-color: #f1baba;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .title {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .error {
+    color: red;
+    text-align: center;
+  }
+  
+  .register-box label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .register-box input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .register-box button {
+    width: 100%;
+    padding: 10px;
+    background-color: #af4934;
+    color: black;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .register-box button:hover {
+    background-color: #e4a79a;
+  }
