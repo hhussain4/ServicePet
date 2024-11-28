@@ -127,71 +127,6 @@ app.post('/login', (req, res) => {
   });
 });
 
-// Appointment-related routes
-app.get('/api/appointments/pets', fetchUserSession, (req, res) => {
-  const query = 'SELECT * FROM pets WHERE userID = ?';
-  connection.query(query, [req.userId], (err, results) => {
-    if (err) {
-      return res.status(500).json({ message: 'Failed to fetch pets' });
-    }
-    res.status(200).json(results);
-  });
-});
-
-app.get('/api/appointments/doctors', (req, res) => {
-  const query = 'SELECT * FROM doctors';
-  connection.query(query, (err, results) => {
-    if (err) {
-      return res.status(500).json({ message: 'Failed to fetch doctors' });
-    }
-    res.status(200).json(results);
-  });
-});
-
-app.get('/api/appointments/hospitals', (req, res) => {
-  const query = 'SELECT hospitalID, hospitalName AS name, address AS location FROM hospitals';
-  connection.query(query, (err, results) => {
-    if (err) {
-      console.error('Error fetching hospitals:', err);
-      return res.status(500).json({ message: 'Failed to fetch hospitals' });
-    }
-    res.status(200).json(results);
-  });
-});
-
-
-app.post('/api/appointments/create', fetchUserSession, (req, res) => {
-  const { petID, doctorName, hospitalName, date, time, address } = req.body;
-
-  if (!petID || !doctorName || !hospitalName || !date || !time || !address) {
-    return res.status(400).json({ message: 'All fields are required' });
-  }
-
-  const findIDsQuery = `
-    SELECT 
-      (SELECT doctorID FROM doctors WHERE name = ?) AS doctorID,
-      (SELECT hospitalID FROM hospitals WHERE hospitalName = ?) AS hospitalID
-  `;
-
-  connection.query(findIDsQuery, [doctorName, hospitalName], (err, results) => {
-    if (err || !results[0].doctorID || !results[0].hospitalID) {
-      return res.status(500).json({ message: 'Failed to fetch IDs for doctor or hospital' });
-    }
-
-    const { doctorID, hospitalID } = results[0];
-
-    const insertQuery = `
-      INSERT INTO appointments (petID, doctorID, hospitalID, date, time, address)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `;
-    connection.query(insertQuery, [petID, doctorID, hospitalID, date, time, address], (err, result) => {
-      if (err) {
-        return res.status(500).json({ message: 'Failed to create appointment' });
-      }
-      res.status(201).json({ message: 'Appointment created successfully', appointmentID: result.insertId });
-    });
-  });
-});
 // User data endpoint
 app.get('/api/user', (req, res) => {
   const authHeader = req.headers.authorization;
@@ -304,7 +239,95 @@ app.get('/api/pets', (req, res) => {
     });
   });
 });
+// Appointment-related routes
+app.get('/api/appointments/pets', fetchUserSession, (req, res) => {
+  const query = 'SELECT * FROM pets WHERE userID = ?';
+  connection.query(query, [req.userId], (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Failed to fetch pets' });
+    }
+    res.status(200).json(results);
+  });
+});
 
+app.get('/api/appointments/doctors', (req, res) => {
+  const query = 'SELECT * FROM doctors';
+  connection.query(query, (err, results) => {
+    if (err) {
+      return res.status(500).json({ message: 'Failed to fetch doctors' });
+    }
+    res.status(200).json(results);
+  });
+});
+
+app.get('/api/appointments/hospitals', (req, res) => {
+  const query = 'SELECT hospitalID, hospitalName AS name, address AS location FROM hospitals';
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching hospitals:', err);
+      return res.status(500).json({ message: 'Failed to fetch hospitals' });
+    }
+    res.status(200).json(results);
+  });
+});
+
+
+app.post('/api/appointments/create', fetchUserSession, (req, res) => {
+  const { petID, doctorName, hospitalName, date, time, address } = req.body;
+
+  if (!petID || !doctorName || !hospitalName || !date || !time || !address) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  const findIDsQuery = `
+    SELECT 
+      (SELECT doctorID FROM doctors WHERE name = ?) AS doctorID,
+      (SELECT hospitalID FROM hospitals WHERE hospitalName = ?) AS hospitalID
+  `;
+
+  connection.query(findIDsQuery, [doctorName, hospitalName], (err, results) => {
+    if (err || !results[0].doctorID || !results[0].hospitalID) {
+      return res.status(500).json({ message: 'Failed to fetch IDs for doctor or hospital' });
+    }
+
+    const { doctorID, hospitalID } = results[0];
+
+    const insertQuery = `
+      INSERT INTO appointments (petID, doctorID, hospitalID, date, time, address)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `;
+    connection.query(insertQuery, [petID, doctorID, hospitalID, date, time, address], (err, result) => {
+      if (err) {
+        return res.status(500).json({ message: 'Failed to create appointment' });
+      }
+      res.status(201).json({ message: 'Appointment created successfully', appointmentID: result.insertId });
+    });
+  });
+});
+
+app.post('/api/validate-insurance', (req, res) => {
+  const { insuranceType, policyId } = req.body;
+
+  const query = `
+    SELECT * 
+    FROM insurance i
+    JOIN owner_insurance oi ON i.policyID = oi.policyID
+    WHERE i.companyName = ? AND oi.policyID = ?
+  `;
+
+  connection.query(query, [insuranceType, policyId], (err, results) => {
+    if (err) {
+      console.error('Error validating insurance:', err);
+      return res.status(500).json({ message: 'Failed to validate insurance' });
+    }
+
+    if (results.length === 0) {
+      return res.status(400).json({ isValid: false });
+    }
+
+    res.status(200).json({ isValid: true });
+  });
+});
 
 
 // Start the server

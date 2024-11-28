@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import InsurancePolicy from './InsurancePolicy';
 
 const Appointment = () => {
+  const [userId] = useState(localStorage.getItem('userId')); // Replace with actual user ID logic
   const [pets, setPets] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [hospitals, setHospitals] = useState([]);
@@ -14,6 +16,7 @@ const Appointment = () => {
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [isInsuranceValid, setIsInsuranceValid] = useState(false);
 
   // Fetch pets, doctors, and hospitals on component load
   useEffect(() => {
@@ -46,6 +49,7 @@ const Appointment = () => {
     fetchData();
   }, []);
 
+  // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
@@ -61,10 +65,16 @@ const Appointment = () => {
     }
   };
 
+  // Submit appointment
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
+
+    if (!isInsuranceValid) {
+      setError('Please validate your insurance before creating an appointment.');
+      return;
+    }
 
     try {
       const sessionToken = localStorage.getItem('sessionToken');
@@ -103,6 +113,10 @@ const Appointment = () => {
       {error && <p className="error">{error}</p>}
       {success && <p className="success">{success}</p>}
 
+      {/* Insurance Policy Validation */}
+      <InsurancePolicy onInsuranceValidated={setIsInsuranceValid} />
+
+      {/* Appointment Form */}
       <form onSubmit={handleSubmit}>
         <label htmlFor="petID">Select Pet</label>
         <select id="petID" name="petID" value={appointment.petID} onChange={handleInputChange} required>
@@ -151,7 +165,9 @@ const Appointment = () => {
           readOnly
         />
 
-        <button type="submit">Create Appointment</button>
+        <button type="submit" disabled={!isInsuranceValid}>
+          Create Appointment
+        </button>
       </form>
     </div>
   );
