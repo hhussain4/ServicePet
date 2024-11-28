@@ -427,6 +427,16 @@ app.post('/api/update-user', fetchUserSession, async (req, res) => {
   }
 });
 
+app.post('/api/logout', fetchUserSession, (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Error destroying session:', err);
+      return res.status(500).json({ message: 'Failed to log out.' });
+    }
+    res.clearCookie('connect.sid'); // Clears the session cookie
+    res.status(200).json({ message: 'Logged out successfully.' });
+  });
+});
 
 // Start the server
 app.listen(port, () => {

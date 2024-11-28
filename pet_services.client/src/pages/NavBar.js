@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const NavBar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const navigate = useNavigate(); // For programmatic navigation
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -10,6 +11,34 @@ const NavBar = () => {
 
   const closeDropdown = () => {
     setIsDropdownOpen(false);
+  };
+
+  const handleLogout = async () => {
+    try {
+      const sessionToken = localStorage.getItem("sessionToken");
+      if (!sessionToken) {
+        throw new Error("No session token found. Please log in.");
+      }
+
+      const response = await fetch("http://localhost:5000/api/logout", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${sessionToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to log out.");
+      }
+
+      // Clear localStorage and redirect
+      localStorage.removeItem("sessionToken");
+      alert("Logged out successfully.");
+      navigate("/login"); // Redirect to the login page
+    } catch (error) {
+      console.error("Error logging out:", error);
+      alert("Failed to log out. Please try again.");
+    }
   };
 
   return (
@@ -49,13 +78,15 @@ const NavBar = () => {
               >
                 User Settings
               </Link>
-              <Link
-                to="/logout"
-                className="block px-4 py-2 hover:bg-gray-200"
-                onClick={closeDropdown} // Close dropdown on link click
+              <button
+                className="block px-4 py-2 text-left hover:bg-gray-200 w-full"
+                onClick={() => {
+                  closeDropdown();
+                  handleLogout();
+                }}
               >
                 Sign Out
-              </Link>
+              </button>
             </div>
           )}
         </div>
