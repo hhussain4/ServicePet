@@ -367,6 +367,65 @@ app.post('/api/user/appointments', (req, res) => {
   });
 });
 
+// Update user data endpoint
+app.post('/api/update-user', fetchUserSession, async (req, res) => {
+  const userId = req.userId; // Retrieved from session middleware
+  const { name, email, address, currentPassword, newPassword } = req.body;
+
+  if (!name || !email || !address) {
+    return res.status(400).json({ message: 'Name, email, and address are required.' });
+  }
+
+  try {
+    // Fetch the user's current password from the database
+    const query = 'SELECT password FROM users WHERE userID = ?';
+    const [user] = await new Promise((resolve, reject) => {
+      connection.query(query, [userId], (err, results) => {
+        if (err) return reject(err);
+        resolve(results);
+      });
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // If the user wants to update the password
+    let passwordToUpdate = user.password; // Keep the current password if not changing
+    if (newPassword) {
+      if (!currentPassword) {
+        return res.status(400).json({ message: 'Current password is required to update the password.' });
+      }
+
+      // Verify the current password matches
+      if (currentPassword !== user.password) {
+        return res.status(403).json({ message: 'Current password is incorrect.' });
+      }
+
+      // Update the password
+      passwordToUpdate = newPassword;
+    }
+
+    // Update the user in the database
+    const updateQuery = `
+      UPDATE users 
+      SET name = ?, email = ?, address = ?, password = ?
+      WHERE userID = ?
+    `;
+
+    await new Promise((resolve, reject) => {
+      connection.query(updateQuery, [name, email, address, passwordToUpdate, userId], (err) => {
+        if (err) return reject(err);
+        resolve();
+      });
+    });
+
+    res.status(200).json({ message: 'User data updated successfully.' });
+  } catch (error) {
+    console.error('Error updating user data:', error);
+    res.status(500).json({ message: 'Failed to update user data.' });
+  }
+});
 
 
 // Start the server

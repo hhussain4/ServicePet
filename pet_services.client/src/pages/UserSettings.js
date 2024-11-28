@@ -7,6 +7,7 @@ const UserSettings = () => {
   const [pets, setPets] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -75,27 +76,55 @@ const UserSettings = () => {
     const { name, value } = e.target;
     setUser((prevUser) => ({ ...prevUser, [name]: value }));
     setError('');
+    setSuccess('');
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setError('');
+    setSuccess('');
+
     if (user['new-password'] && user['new-password'] !== user['confirm-password']) {
-      setError('New password and confirm password do not match');
+      setError('New password and confirm password do not match.');
       return;
     }
 
     try {
-      const response = await fetch('http://localhost:3000/update-user', {
+      const sessionToken = localStorage.getItem('sessionToken');
+      if (!sessionToken) {
+        throw new Error('No session token found. Please log in.');
+      }
+
+      const response = await fetch('http://localhost:5000/api/update-user', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(user),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${sessionToken}`,
+        },
+        body: JSON.stringify({
+          name: user.name,
+          email: user.email,
+          address: user.address,
+          currentPassword: user['current-password'], // Optional
+          newPassword: user['new-password'],       // Optional
+        }),
       });
 
-      if (!response.ok) throw new Error('Failed to update user data');
-      setError('');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update user data.');
+      }
+
+      setSuccess('User data updated successfully.');
+      setUser((prevUser) => ({
+        ...prevUser,
+        'current-password': '',
+        'new-password': '',
+        'confirm-password': '',
+      }));
     } catch (error) {
-      console.error('Error:', error);
-      setError('Failed to update user data.');
+      console.error('Error updating user data:', error);
+      setError(error.message);
     }
   };
 
@@ -108,6 +137,7 @@ const UserSettings = () => {
       <div className="user-settings-container">
         <h1>User Settings</h1>
         {error && <p className="error">{error}</p>}
+        {success && <p className="success">{success}</p>}
         <form onSubmit={handleSubmit}>
           <label htmlFor="name">First Name</label>
           <input
