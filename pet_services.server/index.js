@@ -329,6 +329,45 @@ app.post('/api/validate-insurance', (req, res) => {
   });
 });
 
+app.post('/api/user/appointments', (req, res) => {
+  const { petIDs } = req.body; // Get pet IDs from the request body
+
+  if (!petIDs || petIDs.length === 0) {
+    return res.status(400).json({ message: 'No pet IDs provided' });
+  }
+
+  console.log('Fetching appointments for petIDs:', petIDs); // Debug log
+
+  const appointmentQuery = `
+    SELECT 
+      a.appointmentID, 
+      a.petID, 
+      p.name AS petName, 
+      d.name AS doctorName, 
+      h.hospitalName AS hospitalName, 
+      a.date, 
+      a.time, 
+      a.address
+    FROM appointments a
+    JOIN pets p ON a.petID = p.petID
+    JOIN doctors d ON a.doctorID = d.doctorID
+    JOIN hospitals h ON a.hospitalID = h.hospitalID
+    WHERE a.petID IN (?)
+    ORDER BY a.date ASC, a.time ASC
+  `;
+
+  connection.query(appointmentQuery, [petIDs], (err, results) => {
+    if (err) {
+      console.error('Error fetching appointments:', err);
+      return res.status(500).json({ message: 'Failed to fetch appointments' });
+    }
+
+    console.log('Appointments fetched:', results); // Debug log
+    res.status(200).json(results);
+  });
+});
+
+
 
 // Start the server
 app.listen(port, () => {
