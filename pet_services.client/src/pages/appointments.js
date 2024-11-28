@@ -1,8 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './dashboard.css';
 
-const Dashboard = () => {
+const Appt = () => {
   return (
     <div>
       <div className="top-bar">
@@ -29,4 +28,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Appt;
