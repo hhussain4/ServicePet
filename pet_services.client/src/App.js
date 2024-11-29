@@ -6,14 +6,54 @@ import Login from './pages/login';
 import Register from './pages/register'; // Import the Register component
 import UserSettings from './pages/UserSettings'; // Assuming you have this component
 import PetsPage from './pages/PetsPage'; // Assuming you have this component
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true); // Loading state to prevent unnecessary redirects during validation
 
   const handleLogin = () => {
     setIsAuthenticated(true);
   };
+
+  useEffect(() => {
+    const sessionToken = localStorage.getItem('sessionToken');
+
+    if (sessionToken) {
+      // Validate the session token with the backend
+      const validateSession = async () => {
+        try {
+          const response = await fetch('http://localhost:5000/api/user', {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${sessionToken}`,
+            },
+          });
+
+          if (response.ok) {
+            setIsAuthenticated(true);
+          } else {
+            localStorage.removeItem('sessionToken'); // Remove invalid session token
+            setIsAuthenticated(false);
+          }
+        } catch (error) {
+          console.error('Error validating session token:', error);
+          localStorage.removeItem('sessionToken');
+          setIsAuthenticated(false);
+        } finally {
+          setLoading(false); // Loading complete
+        }
+      };
+
+      validateSession();
+    } else {
+      setLoading(false); // No session token, stop loading
+    }
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>; // Show a loading spinner or message while validating the session
+  }
 
   return (
     <Router>
