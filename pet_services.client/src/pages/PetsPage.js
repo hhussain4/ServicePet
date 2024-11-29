@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 
 const PetsPage = () => {
   const [pets, setPets] = useState([]);
+  const [appointments, setAppointments] = useState([]); // Added state for appointments
   const [newPet, setNewPet] = useState({ breed: '', name: '', birthDate: '' });
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-  // Fetch pets when the component loads
+  // Fetch pets and appointments when the component loads
   useEffect(() => {
-    const fetchPets = async () => {
+    const fetchPetsAndAppointments = async () => {
       try {
         const sessionToken = localStorage.getItem('sessionToken');
 
@@ -15,26 +17,45 @@ const PetsPage = () => {
           throw new Error('No session token found. Please log in.');
         }
 
-        const response = await fetch('http://localhost:5000/api/pets', {
+        // Fetch pets
+        const petsResponse = await fetch('http://localhost:5000/api/pets', {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${sessionToken}`,
+            Authorization: `Bearer ${sessionToken}`,
           },
         });
 
-        if (!response.ok) {
+        if (!petsResponse.ok) {
           throw new Error('Failed to fetch pets');
         }
 
-        const data = await response.json();
-        setPets(data);
+        const petsData = await petsResponse.json();
+        setPets(petsData);
+
+        // Fetch appointments
+        const petIDs = petsData.map((pet) => pet.petID);
+        const appointmentsResponse = await fetch('http://localhost:5000/api/user/appointments', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${sessionToken}`,
+          },
+          body: JSON.stringify({ petIDs }),
+        });
+
+        if (!appointmentsResponse.ok) {
+          throw new Error('Failed to fetch appointments');
+        }
+
+        const appointmentsData = await appointmentsResponse.json();
+        setAppointments(appointmentsData);
       } catch (error) {
         console.error('Error:', error);
-        setError('Failed to fetch pets');
+        setError('Failed to fetch pets or appointments.');
       }
     };
 
-    fetchPets();
+    fetchPetsAndAppointments();
   }, []);
 
   // Handle adding a new pet
@@ -52,7 +73,7 @@ const PetsPage = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionToken}`,
+          Authorization: `Bearer ${sessionToken}`,
         },
         body: JSON.stringify(newPet),
       });
@@ -62,12 +83,48 @@ const PetsPage = () => {
       }
 
       const data = await response.json();
-      console.log('Pet added successfully:', data);
       setPets((prevPets) => [...prevPets, { ...newPet, petID: data.petID }]);
       setNewPet({ breed: '', name: '', birthDate: '' }); // Reset the form
+      setSuccess('Pet added successfully.');
+      setError('');
     } catch (error) {
       console.error('Error:', error);
-      setError('Failed to add pet');
+      setError('Failed to add pet.');
+      setSuccess('');
+    }
+  };
+
+  // Handle deleting a pet and its appointments
+  const handleDeletePet = async (petID) => {
+    try {
+      const sessionToken = localStorage.getItem('sessionToken');
+
+      if (!sessionToken) {
+        throw new Error('No session token found. Please log in.');
+      }
+
+      const response = await fetch(`http://localhost:5000/api/pets/${petID}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${sessionToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete pet');
+      }
+
+      // Update state to remove the pet and its related appointments
+      setPets((prevPets) => prevPets.filter((pet) => pet.petID !== petID));
+      setAppointments((prevAppointments) =>
+        prevAppointments.filter((appointment) => appointment.petID !== petID)
+      );
+      setSuccess('Pet and associated appointments deleted successfully.');
+      setError('');
+    } catch (error) {
+      console.error('Error:', error);
+      setError('Failed to delete pet.');
+      setSuccess('');
     }
   };
 
@@ -80,11 +137,13 @@ const PetsPage = () => {
     <div className="pets-page-container">
       <h1>Your Pets</h1>
       {error && <p className="error">{error}</p>}
+      {success && <p className="success">{success}</p>}
 
       <ul>
         {pets.map((pet) => (
           <li key={pet.petID}>
             {pet.name} ({pet.breed}) - Born on {pet.birthDate}
+            <button onClick={() => handleDeletePet(pet.petID)}>Delete</button>
           </li>
         ))}
       </ul>
@@ -120,6 +179,19 @@ const PetsPage = () => {
         />
         <button type="submit">Add Pet</button>
       </form>
+
+      <h2>Appointments</h2>
+      {appointments.length === 0 ? (
+        <p>No appointments found</p>
+      ) : (
+        <ul>
+          {appointments.map((appt) => (
+            <li key={appt.appointmentID}>
+              {appt.petName}: {appt.date} at {appt.time} with Dr. {appt.doctorName} at {appt.hospitalName}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

@@ -38,7 +38,7 @@ app.use(cookieParser());
 app.use(cors({
   origin: 'http://localhost:3000', // Frontend's URL
   credentials: true,
-  methods: ['GET', 'POST', 'OPTIONS'],
+  methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
@@ -435,6 +435,51 @@ app.post('/api/logout', fetchUserSession, (req, res) => {
     }
     res.clearCookie('connect.sid'); // Clears the session cookie
     res.status(200).json({ message: 'Logged out successfully.' });
+  });
+});
+app.delete('/api/pets/:petID', (req, res) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  const sessionToken = authHeader.split(' ')[1];
+
+  sessionStore.get(sessionToken, (err, session) => {
+    if (err || !session) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    if (!session.userId) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const { petID } = req.params;
+
+    const deleteAppointmentsQuery = 'DELETE FROM appointments WHERE petID = ?';
+    const deletePetQuery = 'DELETE FROM pets WHERE petID = ? AND userID = ?';
+
+    // First, delete related appointments, then delete the pet
+    connection.query(deleteAppointmentsQuery, [petID], (err) => {
+      if (err) {
+        console.error('Error deleting appointments:', err);
+        return res.status(500).json({ message: 'Failed to delete related appointments' });
+      }
+
+      connection.query(deletePetQuery, [petID, session.userId], (err, result) => {
+        if (err) {
+          console.error('Error deleting pet:', err);
+          return res.status(500).json({ message: 'Failed to delete pet' });
+        }
+
+        if (result.affectedRows === 0) {
+          return res.status(404).json({ message: 'Pet not found or not owned by the user' });
+        }
+
+        res.status(200).json({ message: 'Pet deleted successfully' });
+      });
+    });
   });
 });
 

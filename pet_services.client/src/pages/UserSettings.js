@@ -127,6 +127,33 @@ const UserSettings = () => {
       setError(error.message);
     }
   };
+  const deletePet = async (petID) => {
+    try {
+      const sessionToken = localStorage.getItem('sessionToken');
+      if (!sessionToken) {
+        throw new Error('No session token found. Please log in.');
+      }
+  
+      const response = await fetch(`http://localhost:5000/api/pets/${petID}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${sessionToken}`,
+        },
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to delete pet.');
+      }
+  
+      setPets((prevPets) => prevPets.filter((pet) => pet.petID !== petID));
+      setSuccess('Pet deleted successfully.');
+    } catch (error) {
+      console.error('Error deleting pet:', error);
+      setError(error.message);
+    }
+  };
+  
 
   const now = new Date();
   const pastAppointments = appointments.filter((appt) => new Date(appt.date) < now);
