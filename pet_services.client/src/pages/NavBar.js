@@ -68,18 +68,18 @@ const NavBar = () => {
           </button>
           {isDropdownOpen && (
             <div
-              className="dropdown-content absolute bg-white text-black right-0 mt-2 shadow-lg rounded w-[160px]"
+              className="dropdown-content absolute bg-white text-black right-0 mt-2 shadow-lg rounded w-[160px] text-center"
               onMouseLeave={closeDropdown} // Optional: Close when mouse leaves
             >
               <Link
                 to="/settings"
-                className="block px-4 py-2 hover:bg-gray-200"
+                className="block px-4 py-2 hover:bg-gray-200 text-center"
                 onClick={closeDropdown} // Close dropdown on link click
               >
                 User Settings
               </Link>
               <button
-                className="block px-4 py-2 text-left hover:bg-gray-200 w-full"
+                className="block px-4 py-2 hover:bg-gray-200 w-full text-center"
                 onClick={() => {
                   closeDropdown();
                   handleLogout();
