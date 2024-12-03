@@ -134,8 +134,8 @@ const PetsPage = () => {
   };
 
   return (
-    <div className="pets-page-container">
-      <h1>Your Pets</h1>
+    <div className="pets-page-container border-[#F7ECE9] border-4 rounded-2xl">
+      <h1 className="text-[34px] text-left ml-6">Pet Information</h1>
       {error && <p className="error">{error}</p>}
       {success && <p className="success">{success}</p>}
 
@@ -180,8 +180,8 @@ const PetsPage = () => {
         <button type="submit">Add Pet</button>
       </form>
 
-      <h2>Appointments</h2>
-      {appointments.length === 0 ? (
+      {/*<h2>Appointments</h2>*/}
+      { /* appointments.length === 0 ? (
         <p>No appointments found</p>
       ) : (
         <ul>
@@ -191,7 +191,7 @@ const PetsPage = () => {
             </li>
           ))}
         </ul>
-      )}
+      ) */}
     </div>
   );
 };

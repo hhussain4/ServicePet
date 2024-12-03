@@ -11,7 +11,7 @@ const Dashboard = () => {
         <img
           src={dashban2}
           alt="Test"
-          className="w-auto h-auto scale-75 border-[#F7ECE9] border-4 rounded-2xl"
+          className="w-auto h-auto scale-90 border-[#F7ECE9] border-4 rounded-2xl"
         />
       </div>
       <div>
