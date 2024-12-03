@@ -135,22 +135,24 @@ const PetsPage = () => {
 
   return (
     <div className="pets-page-container border-[#F7ECE9] border-4 rounded-2xl">
-      <h1 className="text-[34px] text-left ml-6">Pet Information</h1>
+      <h1 className="text-[34px] text-left ml-2">Pet Information</h1>
       {error && <p className="error">{error}</p>}
       {success && <p className="success">{success}</p>}
 
-      <ul>
+      <ul className='flex justify-center p-2'>
         {pets.map((pet) => (
-          <li key={pet.petID}>
+          <li className="" key={pet.petID}>
             {pet.name} ({pet.breed}) - Born on {pet.birthDate}
-            <button onClick={() => handleDeletePet(pet.petID)}>Delete</button>
+            <button className=" bg-[#FFEDEC] border-black border-2 rounded-md items-center px-2 py-0 ml-9 mb-2" onClick={() => handleDeletePet(pet.petID)}>Delete</button>
           </li>
         ))}
       </ul>
 
-      <h3>Add a New Pet</h3>
+      <h3 className="text-[24px] text-left ml-2 mb-4">Add a New Pet</h3>
       <form onSubmit={handleAddPet}>
-        <label htmlFor="name">Name</label>
+        <div className="flex justify-evenly mb-4">
+        <div>
+        <label htmlFor="name">Name: </label>
         <input
           type="text"
           id="name"
@@ -158,8 +160,11 @@ const PetsPage = () => {
           value={newPet.name}
           onChange={handlePetChange}
           required
+          className="border-black border-2 rounded-lg p-[1px] w-48 text-left"
         />
-        <label htmlFor="breed">Breed</label>
+        </div>
+        <div>
+        <label htmlFor="breed">Breed: </label>
         <input
           type="text"
           id="breed"
@@ -167,8 +172,11 @@ const PetsPage = () => {
           value={newPet.breed}
           onChange={handlePetChange}
           required
+          className="border-black border-2 rounded-lg p-[1px] w-48 text-left"
         />
-        <label htmlFor="birthDate">Birth Date</label>
+</div>
+<div>
+        <label htmlFor="birthDate">Birth Date: </label>
         <input
           type="date"
           id="birthDate"
@@ -176,8 +184,11 @@ const PetsPage = () => {
           value={newPet.birthDate}
           onChange={handlePetChange}
           required
+          className="border-black border-2 rounded-lg p-[1px] w-48 text-left"
         />
-        <button type="submit">Add Pet</button>
+</div>
+        <button type="submit" className=" bg-[#FFEDEC] border-black border-2 rounded-md items-center px-2 py-0 ml-2">Add Pet</button>
+        </div>
       </form>
 
       {/*<h2>Appointments</h2>*/}

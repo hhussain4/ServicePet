@@ -181,49 +181,61 @@ const UserSettings = () => {
         />
       </div>
       <div className="user-settings-container mt-12 mb-12 max-w-screen-lg mx-auto border-[#F7ECE9] border-4 rounded-2xl">
-        <h1 className="text-[34px] text-left ml-6"> User Information</h1>
+        <h1 className="text-[34px] text-left ml-2"> User Information</h1>
         {error && <p className="error">{error}</p>}
         {success && <p className="success">{success}</p>}
         <form onSubmit={handleSubmit}>
-          <div className="name-ssn-email-address ">
-            <label htmlFor="name">Name: </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={user.name || ""}
-              onChange={handleChange}
-              required
-              className=""
-            />
-            <label htmlFor="SSN">SSN: </label>
-            <input
-              type="text"
-              id="SSN"
-              name="SSN"
-              value={user.SSN || ""}
-              disabled
-            />
-            <label htmlFor="email">Email: </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={user.email || ""}
-              onChange={handleChange}
-              required
-            />
-            <label htmlFor="address">Address: </label>
-            <input
-              type="text"
-              id="address"
-              name="address"
-              value={user.address || ""}
-              onChange={handleChange}
-              required
-            />
+          <div className="name-ssn-email-address flex justify-evenly mb-4">
+            <div>
+              <label htmlFor="name">Name: </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={user.name || ""}
+                onChange={handleChange}
+                required
+                className="border-black border-2 rounded-lg p-[1px] w-48 text-left"
+              />
+            </div>
+            <div>
+              <label htmlFor="SSN">SSN: </label>
+              <input
+                type="text"
+                id="SSN"
+                name="SSN"
+                value={user.SSN || ""}
+                disabled
+                className="border-black border-2 rounded-lg p-[1px] w-48 text-left"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="email">Email: </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={user.email || ""}
+                onChange={handleChange}
+                required
+                className="border-black border-2 rounded-lg p-[1px] w-48 text-left"
+              />
+            </div>
+            <div>
+              <label htmlFor="address">Address: </label>
+              <input
+                type="text"
+                id="address"
+                name="address"
+                value={user.address || ""}
+                onChange={handleChange}
+                required
+                className="border-black border-2 rounded-lg p-[1px] w-48 text-left"
+              />
+            </div>
           </div>
-          <div className="password-fields">
+          <div className="password-fields flex justify-evenly mb-2">
             <label htmlFor="current-password">Current Password: </label>
             <input
               type="password"
@@ -231,6 +243,7 @@ const UserSettings = () => {
               name="current-password"
               placeholder="Enter current password"
               onChange={handleChange}
+              className="border-black border-2 rounded-lg p-[1px] w-48 text-left"
             />
             <label htmlFor="new-password">New Password: </label>
             <input
@@ -239,6 +252,7 @@ const UserSettings = () => {
               name="new-password"
               placeholder="Enter new password"
               onChange={handleChange}
+              className="border-black border-2 rounded-lg p-[1px] w-48 text-left"
             />
             <label htmlFor="confirm-password">Confirm New Password: </label>
             <input
@@ -247,10 +261,11 @@ const UserSettings = () => {
               name="confirm-password"
               placeholder="Confirm new password"
               onChange={handleChange}
+              className="border-black border-2 rounded-lg p-[1px] w-48 text-left"
             />
           </div>
-          <div>
-            <button type="submit">Save</button>
+          <div  className="mb-2 flex justify-start p-2">
+            <button type="submit" className=" bg-[#FFEDEC] border-black border-2 rounded-md items-center px-2 py-0">Save</button>
           </div>
         </form>
       </div>
@@ -261,35 +276,35 @@ const UserSettings = () => {
 
       {/* Appointments Section */}
       <div>
-        <div className="appointments-section mb-12 max-w-screen-lg mx-auto border-[#F7ECE9] border-4 rounded-2xl" > 
-        <h2 className="text-[34px] text-left ml-6">Upcoming Appointments</h2>
-        {upcomingAppointments.length === 0 ? (
-          <p>No upcoming appointments</p>
-        ) : (
-          <ul>
-            {upcomingAppointments.map((appt) => (
-              <li key={appt.appointmentID}>
-                {appt.date} at {appt.time} with Dr. {appt.doctorName} at{" "}
-                {appt.hospitalName} for {appt.petName}
-              </li>
-            ))}
-          </ul>
-        )}
+        <div className="appointments-section mb-12 max-w-screen-lg mx-auto border-[#F7ECE9] border-4 rounded-2xl">
+          <h2 className="text-[34px] text-left ml-2">Upcoming Appointments</h2>
+          {upcomingAppointments.length === 0 ? (
+            <p>No upcoming appointments</p>
+          ) : (
+            <ul>
+              {upcomingAppointments.map((appt) => (
+                <li key={appt.appointmentID}>
+                  {appt.date} at {appt.time} with Dr. {appt.doctorName} at{" "}
+                  {appt.hospitalName} for {appt.petName}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
         <div className="appointments-section max-w-screen-lg mx-auto border-[#F7ECE9] border-4 rounded-2xl">
-        <h2 className="text-[34px] text-left ml-6">Past Appointments</h2>
-        {pastAppointments.length === 0 ? (
-          <p>No past appointments</p>
-        ) : (
-          <ul>
-            {pastAppointments.map((appt) => (
-              <li key={appt.appointmentID}>
-                {appt.date} at {appt.time} with Dr. {appt.doctorName} at{" "}
-                {appt.hospitalName} for {appt.petName}
-              </li>
-            ))}
-          </ul>
-        )}
+          <h2 className="text-[34px] text-left ml-2">Past Appointments</h2>
+          {pastAppointments.length === 0 ? (
+            <p>No past appointments</p>
+          ) : (
+            <ul>
+              {pastAppointments.map((appt) => (
+                <li key={appt.appointmentID}>
+                  {appt.date} at {appt.time} with Dr. {appt.doctorName} at{" "}
+                  {appt.hospitalName} for {appt.petName}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
     </div>
