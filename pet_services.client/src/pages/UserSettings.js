@@ -311,11 +311,12 @@ const UserSettings = () => {
 ) : (
   <ul>
     {upcomingAppointments.map((appt) => (
-      <li key={appt.appointmentID}>
+      <li className="mb-2" 
+        key={appt.appointmentID}>
         {appt.date} at {appt.time} with Dr. {appt.doctorName} at {appt.hospitalName} for {appt.petName}
         <button
           onClick={() => deleteAppointment(appt.appointmentID)}
-          className="bg-red-500 text-white rounded px-2 ml-4"
+          className=" bg-[#FFEDEC] border-black border-2 rounded-md items-center px-2 py-0 ml-2"
         >
           Delete
         </button>
@@ -325,18 +326,19 @@ const UserSettings = () => {
 )}
 
         </div>
-        <div className="appointments-section max-w-screen-lg mx-auto border-[#F7ECE9] border-4 rounded-2xl">
+        <div className="appointments-section max-w-screen-lg mx-auto border-[#F7ECE9] border-4 rounded-2xl mb-6">
           <h2 className="text-[34px] text-left ml-2">Past Appointments</h2>
           {pastAppointments.length === 0 ? (
   <p>No past appointments</p>
 ) : (
   <ul>
     {pastAppointments.map((appt) => (
-      <li key={appt.appointmentID}>
+      <li className="mb-2" 
+        key={appt.appointmentID}>
         {appt.date} at {appt.time} with Dr. {appt.doctorName} at {appt.hospitalName} for {appt.petName}
         <button
           onClick={() => deleteAppointment(appt.appointmentID)}
-          className="bg-red-500 text-white rounded px-2 ml-4"
+          className=" bg-[#FFEDEC] border-black border-2 rounded-md items-center px-2 py-0 ml-2"
         >
           Delete
         </button>

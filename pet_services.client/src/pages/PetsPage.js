@@ -139,9 +139,9 @@ const PetsPage = () => {
       {error && <p className="error">{error}</p>}
       {success && <p className="success">{success}</p>}
 
-      <ul className='flex justify-center p-2'>
+      <ul className='flex flex-col items-center justify-center p-2 space-y-1'>
         {pets.map((pet) => (
-          <li className="" key={pet.petID}>
+          <li className="flex items-center" key={pet.petID}>
             {pet.name} ({pet.breed}) - Born on {pet.birthDate}
             <button className=" bg-[#FFEDEC] border-black border-2 rounded-md items-center px-2 py-0 ml-9 mb-2" onClick={() => handleDeletePet(pet.petID)}>Delete</button>
           </li>
