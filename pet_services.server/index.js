@@ -483,6 +483,25 @@ app.delete('/api/pets/:petID', (req, res) => {
   });
 });
 
+app.delete('/api/appointments/:appointmentID', fetchUserSession, (req, res) => {
+  const { appointmentID } = req.params;
+
+  const deleteQuery = 'DELETE FROM appointments WHERE appointmentID = ? AND EXISTS (SELECT 1 FROM pets WHERE petID = appointments.petID AND userID = ?)';
+  
+  connection.query(deleteQuery, [appointmentID, req.userId], (err, result) => {
+    if (err) {
+      console.error('Error deleting appointment:', err);
+      return res.status(500).json({ message: 'Failed to delete appointment' });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Appointment not found or unauthorized' });
+    }
+
+    res.status(200).json({ message: 'Appointment deleted successfully' });
+  });
+});
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

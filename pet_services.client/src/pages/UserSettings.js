@@ -161,7 +161,35 @@ const UserSettings = () => {
       setError(error.message);
     }
   };
-
+  const deleteAppointment = async (appointmentID) => {
+    try {
+      const sessionToken = localStorage.getItem("sessionToken");
+      if (!sessionToken) {
+        throw new Error("No session token found. Please log in.");
+      }
+  
+      const response = await fetch(`http://localhost:5000/api/appointments/${appointmentID}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${sessionToken}`,
+        },
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to delete appointment.");
+      }
+  
+      setAppointments((prevAppointments) =>
+        prevAppointments.filter((appt) => appt.appointmentID !== appointmentID)
+      );
+      setSuccess("Appointment deleted successfully.");
+    } catch (error) {
+      console.error("Error deleting appointment:", error);
+      setError(error.message);
+    }
+  };
+  
   const now = new Date();
   const pastAppointments = appointments.filter(
     (appt) => new Date(appt.date) < now
@@ -279,32 +307,44 @@ const UserSettings = () => {
         <div className="appointments-section mb-12 max-w-screen-lg mx-auto border-[#F7ECE9] border-4 rounded-2xl">
           <h2 className="text-[34px] text-left ml-2">Upcoming Appointments</h2>
           {upcomingAppointments.length === 0 ? (
-            <p>No upcoming appointments</p>
-          ) : (
-            <ul>
-              {upcomingAppointments.map((appt) => (
-                <li key={appt.appointmentID}>
-                  {appt.date} at {appt.time} with Dr. {appt.doctorName} at{" "}
-                  {appt.hospitalName} for {appt.petName}
-                </li>
-              ))}
-            </ul>
-          )}
+  <p>No upcoming appointments</p>
+) : (
+  <ul>
+    {upcomingAppointments.map((appt) => (
+      <li key={appt.appointmentID}>
+        {appt.date} at {appt.time} with Dr. {appt.doctorName} at {appt.hospitalName} for {appt.petName}
+        <button
+          onClick={() => deleteAppointment(appt.appointmentID)}
+          className="bg-red-500 text-white rounded px-2 ml-4"
+        >
+          Delete
+        </button>
+      </li>
+    ))}
+  </ul>
+)}
+
         </div>
         <div className="appointments-section max-w-screen-lg mx-auto border-[#F7ECE9] border-4 rounded-2xl">
           <h2 className="text-[34px] text-left ml-2">Past Appointments</h2>
           {pastAppointments.length === 0 ? (
-            <p>No past appointments</p>
-          ) : (
-            <ul>
-              {pastAppointments.map((appt) => (
-                <li key={appt.appointmentID}>
-                  {appt.date} at {appt.time} with Dr. {appt.doctorName} at{" "}
-                  {appt.hospitalName} for {appt.petName}
-                </li>
-              ))}
-            </ul>
-          )}
+  <p>No past appointments</p>
+) : (
+  <ul>
+    {pastAppointments.map((appt) => (
+      <li key={appt.appointmentID}>
+        {appt.date} at {appt.time} with Dr. {appt.doctorName} at {appt.hospitalName} for {appt.petName}
+        <button
+          onClick={() => deleteAppointment(appt.appointmentID)}
+          className="bg-red-500 text-white rounded px-2 ml-4"
+        >
+          Delete
+        </button>
+      </li>
+    ))}
+  </ul>
+)}
+
         </div>
       </div>
     </div>
