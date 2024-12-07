@@ -24,3 +24,6 @@ cd pet_services.client
 npm install
 cd..
 npm start
+
+### Note:
+To test policy ID, use 1 for PetSecure and 2 for HealthyPets
