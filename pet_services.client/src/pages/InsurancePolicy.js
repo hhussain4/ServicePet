@@ -60,45 +60,75 @@ const InsurancePolicy = ({ onInsuranceValidated }) => {
   };
 
   return (
-    <div className="insurance-policy-container">
-      <h2>Insurance Details</h2>
-
-      <label htmlFor="insuranceType">Select Insurance Type:</label>
-      <select
-        id="insuranceType"
-        value={insuranceType}
-        onChange={(e) => {
-          setInsuranceType(e.target.value);
-          setValidationMessage(''); // Clear previous validation message
-        }}
-        required
-      >
-        <option value="">-- Choose Insurance --</option>
-        <option value="PetSecure">PetSecure</option>
-        <option value="HealthyPets">HealthyPets</option>
-        <option value="None">None</option>
-      </select>
-
-      {insuranceType !== 'None' && (
-        <>
-          <label htmlFor="policyId">Enter Policy ID:</label>
-          <input
-            type="text"
-            id="policyId"
-            value={policyId}
-            onChange={(e) => setPolicyId(e.target.value)}
-            required
-          />
-        </>
-      )}
-
-      <button type="button" onClick={handleValidation}>
-        Validate Insurance
-      </button>
-
-      {validationMessage && <p className="validation-message">{validationMessage}</p>}
+    <div className="appointment-container mt-12 mb-20 mx-auto px-4 lg:px-8 max-w-screen-md border-[#F7ECE9] border-4 rounded-2xl">
+      <div className="insurance-policy-container">
+        <h2 className="text-center mb-4">Insurance Details</h2>
+  
+        <div className="flex justify-evenly mb-4">
+          {/* Select Insurance Type */}
+          <div>
+            <label htmlFor="insuranceType" className="block">Select Insurance Type:</label>
+            <select
+              id="insuranceType"
+              value={insuranceType}
+              onChange={(e) => {
+                setInsuranceType(e.target.value);
+                setValidationMessage(''); // Clear previous validation message
+              }}
+              className="border-black border-2 rounded-lg p-1 w-48 text-left"
+              required
+            >
+              <option value="">-- Choose Insurance --</option>
+              <option value="PetSecure">PetSecure</option>
+              <option value="HealthyPets">HealthyPets</option>
+              <option value="None">None</option>
+            </select>
+          </div>
+  
+          {/* Enter Policy ID */}
+          {insuranceType !== 'None' && (
+            <div>
+              <label htmlFor="policyId" className="block">Enter Policy ID:</label>
+              <input
+                type="text"
+                id="policyId"
+                value={policyId}
+                onChange={(e) => setPolicyId(e.target.value)}
+                required
+                className="border-black border-2 rounded-lg p-1 w-48 text-left bg-gray-100 text-gray-500"
+              />
+            </div>
+          )}
+        </div>
+  
+        {/* Validate Insurance Button */}
+        <div className="flex justify-end p-2">
+          <button
+            type="button"
+            onClick={handleValidation}
+            className={`bg-[#FFEDEC] border-black border-2 rounded-md px-4 py-1 ${
+              insuranceType && policyId ? "hover:bg-[#F7ECE9]" : "cursor-not-allowed"
+            }`}
+            disabled={!insuranceType || (!policyId && insuranceType !== 'None')} // Disable if conditions are not met
+          >
+            Validate Insurance
+          </button>
+        </div>
+  
+        {/* Validation Message */}
+        {validationMessage && (
+          <p
+            className={`mt-4 text-sm font-medium ${
+              isValid ? 'text-green-600' : 'text-red-600'
+            }`}
+          >
+            {validationMessage}
+          </p>
+        )}
+      </div>
     </div>
   );
+  
 };
 
 export default InsurancePolicy;
