@@ -14,7 +14,7 @@ Follow these steps to set up and run the project locally:
 
 ### 1. Clone the Repository
 Clone the repository to your local machine using the following command:
-`
+```bash
 git clone https://github.com/hhussain4/ServicePet.git
 cd ServicePet
 cd pet_services.server
@@ -24,7 +24,7 @@ cd pet_services.client
 npm install
 cd..
 npm start
-`
+```
 ### Note:
 To test policy ID, use 1 for PetSecure and 2 for HealthyPets
 
