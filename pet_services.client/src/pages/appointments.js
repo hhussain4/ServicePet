@@ -235,7 +235,7 @@ const Appointment = () => {
             </div>
           </div>
   
-          <div className="flex justify-end p-2">
+          <div className="flex justify-center p-2 mb-2">
             <button
               type="submit"
               disabled={!isInsuranceValid}

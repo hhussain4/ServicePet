@@ -62,7 +62,7 @@ const InsurancePolicy = ({ onInsuranceValidated }) => {
   return (
     <div className="appointment-container mt-12 mb-20 mx-auto px-4 lg:px-8 max-w-screen-md border-[#F7ECE9] border-4 rounded-2xl">
       <div className="insurance-policy-container">
-        <h2 className="text-center mb-4">Insurance Details</h2>
+        <h2 className="text-center mb-4 mt-2">Insurance Details</h2>
   
         <div className="flex justify-evenly mb-4">
           {/* Select Insurance Type */}
@@ -102,7 +102,8 @@ const InsurancePolicy = ({ onInsuranceValidated }) => {
         </div>
   
         {/* Validate Insurance Button */}
-        <div className="flex justify-end p-2">
+        
+        <div className="flex justify-center p-2 mb-2">
           <button
             type="button"
             onClick={handleValidation}
@@ -114,6 +115,7 @@ const InsurancePolicy = ({ onInsuranceValidated }) => {
             Validate Insurance
           </button>
         </div>
+        
   
         {/* Validation Message */}
         {validationMessage && (
