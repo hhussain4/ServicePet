@@ -167,19 +167,19 @@ const UserSettings = () => {
       if (!sessionToken) {
         throw new Error("No session token found. Please log in.");
       }
-  
+
       const response = await fetch(`http://localhost:5000/api/appointments/${appointmentID}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${sessionToken}`,
         },
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to delete appointment.");
       }
-  
+
       setAppointments((prevAppointments) =>
         prevAppointments.filter((appt) => appt.appointmentID !== appointmentID)
       );
@@ -189,7 +189,7 @@ const UserSettings = () => {
       setError(error.message);
     }
   };
-  
+
   const now = new Date();
   const pastAppointments = appointments.filter(
     (appt) => new Date(appt.date) < now
@@ -292,7 +292,7 @@ const UserSettings = () => {
               className="border-black border-2 rounded-lg p-[1px] w-48 text-left"
             />
           </div>
-          <div  className="mb-2 flex justify-start p-2">
+          <div className="mb-2 flex justify-start p-2">
             <button type="submit" className=" bg-[#FFEDEC] border-black border-2 rounded-md items-center px-2 py-0">Save</button>
           </div>
         </form>
@@ -307,45 +307,45 @@ const UserSettings = () => {
         <div className="appointments-section mb-12 max-w-screen-lg mx-auto border-[#F7ECE9] border-4 rounded-2xl">
           <h2 className="text-[34px] text-left ml-2">Upcoming Appointments</h2>
           {upcomingAppointments.length === 0 ? (
-  <p>No upcoming appointments</p>
-) : (
-  <ul>
-    {upcomingAppointments.map((appt) => (
-      <li className="mb-2" 
-        key={appt.appointmentID}>
-        {appt.date} at {appt.time} with Dr. {appt.doctorName} at {appt.hospitalName} for {appt.petName}
-        <button
-          onClick={() => deleteAppointment(appt.appointmentID)}
-          className=" bg-[#FFEDEC] border-black border-2 rounded-md items-center px-2 py-0 ml-2"
-        >
-          Delete
-        </button>
-      </li>
-    ))}
-  </ul>
-)}
+            <p>No upcoming appointments</p>
+          ) : (
+            <ul>
+              {upcomingAppointments.map((appt) => (
+                <li className="mb-2"
+                  key={appt.appointmentID}>
+                  {appt.date} at {appt.time} with Dr. {appt.doctorName} at {appt.hospitalName} for {appt.petName}
+                  <button
+                    onClick={() => deleteAppointment(appt.appointmentID)}
+                    className=" bg-[#FFEDEC] border-black border-2 rounded-md items-center px-2 py-0 ml-2"
+                  >
+                    Delete
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
 
         </div>
         <div className="appointments-section max-w-screen-lg mx-auto border-[#F7ECE9] border-4 rounded-2xl mb-6">
           <h2 className="text-[34px] text-left ml-2">Past Appointments</h2>
           {pastAppointments.length === 0 ? (
-  <p>No past appointments</p>
-) : (
-  <ul>
-    {pastAppointments.map((appt) => (
-      <li className="mb-2" 
-        key={appt.appointmentID}>
-        {appt.date} at {appt.time} with Dr. {appt.doctorName} at {appt.hospitalName} for {appt.petName}
-        <button
-          onClick={() => deleteAppointment(appt.appointmentID)}
-          className=" bg-[#FFEDEC] border-black border-2 rounded-md items-center px-2 py-0 ml-2"
-        >
-          Delete
-        </button>
-      </li>
-    ))}
-  </ul>
-)}
+            <p>No past appointments</p>
+          ) : (
+            <ul>
+              {pastAppointments.map((appt) => (
+                <li className="mb-2"
+                  key={appt.appointmentID}>
+                  {appt.date} at {appt.time} with Dr. {appt.doctorName} at {appt.hospitalName} for {appt.petName}
+                  <button
+                    onClick={() => deleteAppointment(appt.appointmentID)}
+                    className=" bg-[#FFEDEC] border-black border-2 rounded-md items-center px-2 py-0 ml-2"
+                  >
+                    Delete
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
 
         </div>
       </div>
