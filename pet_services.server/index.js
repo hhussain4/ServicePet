@@ -80,6 +80,7 @@ const fetchUserSession = (req, res, next) => {
 // Routes
 app.post('/register', (req, res) => {
   const { name, email, password, ssn, address } = req.body;
+
   const checkQuery = 'SELECT * FROM users WHERE ssn = ?';
   connection.query(checkQuery, [ssn], (err, results) => {
     if (err) {
@@ -95,11 +96,20 @@ app.post('/register', (req, res) => {
       if (err) {
         res.status(500).json({ message: 'Registration failed' });
       } else {
-        res.status(200).json({ message: 'Registration successful' });
+        req.session.regenerate((err) => {
+          if (err) {
+            return res.status(500).json({ message: 'Session creation failed' });
+          }
+          req.session.userId = name; // Or any unique identifier
+          req.session.save(() => {
+            res.status(200).json({ message: 'Registration successful', sessionToken: req.session.id });
+          });
+        });
       }
     });
   });
 });
+
 
 app.post('/login', (req, res) => {
   const { email, password } = req.body;

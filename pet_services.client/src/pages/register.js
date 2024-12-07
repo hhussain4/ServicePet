@@ -13,13 +13,13 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     // Basic client-side validation
     if (!name || !email || !password || !ssn || !address) {
       setError('All fields are required.');
       return;
     }
-
+  
     try {
       const response = await fetch('http://localhost:5000/register', {
         method: 'POST',
@@ -28,20 +28,27 @@ const Register = () => {
         },
         body: JSON.stringify({ name, email, password, ssn, address }),
       });
-
+  
       const data = await response.json();
-
+  
       if (!response.ok) {
         throw new Error(data.message || 'Registration failed');
       }
-
+  
       console.log('Registration successful:', data);
+  
+      // Save session token to localStorage
+      if (data.sessionToken) {
+        localStorage.setItem('sessionToken', data.sessionToken);
+      }
+  
       navigate('/dashboard'); // Redirect to the dashboard after successful registration
     } catch (error) {
       console.error('Error:', error);
       setError(error.message || 'Registration failed. Please try again.');
     }
   };
+  
 
   return (
     <div className="register-container flex justify-center items-center h-screen w-screen bg-[#F7ECE9]">
